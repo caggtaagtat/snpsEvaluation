@@ -30,7 +30,7 @@ createOutputDF <- function(rowsDF){
                           SA_MaxEnt_alt=0,
                           SNV_localized_relative_to_SD="",
                           SNV_localized_relative_to_SA="",
-                          exon_length_of_next_exon=0,
+                          length_of_next_exon=0,
                           variation_type="",
                           gene_strand=0,
                           chromosome="",

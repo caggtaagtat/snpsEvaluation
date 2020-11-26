@@ -1,6 +1,8 @@
 getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq ){
   
   splicesiteInfo <- list()
+  surroundingSeq <- substr(surroundingSeq, 40, nchar(surroundingSeq)-39)
+  surroundingSeq <- substr(altSurroundingSeq, 40, nchar(altSurroundingSeq)-39)
   
   ## Searching overlapping SDs
   ## Create 11nt long subsequences
@@ -19,7 +21,7 @@ getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq ){
   splicesiteInfo$sd_max_alt <- max(durchzahl2$hbs)
   splicesiteInfo$sd_max_diff <- splicesiteInfo$sd_max_alt - splicesiteInfo$sd_max_ref
   
-  
+  rm(durchzahl, durchzahl2)
   
   ## Searching overlapping SDs for GC sites
   ## Create 11nt long subsequences

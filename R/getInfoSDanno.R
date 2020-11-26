@@ -1,8 +1,3 @@
-## Define input variables for manual testing
-variationType <- varType
-alt_nuc <- altNuc
-genomic_coordinate <- gen_cord
-
 ## Enter info about nearest SD
 getInfoSDanno <- function(splicesites, variationType, alt_nuc, genomic_coordinate,
                           chromosome, strand, referenceDnaStringSet,deletion_length,

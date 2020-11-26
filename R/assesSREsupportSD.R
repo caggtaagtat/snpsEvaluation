@@ -1,6 +1,4 @@
-location <- snvTable$SNV_localized_relative_to_SD[case]
-
-assesSREsupportSD <- function(SDcor, varType, altNuc, gen_cord, chromosome, 
+assesSREsupportSD <- function(SDcor, variationType, altNuc, gen_cord, chromosome, 
                               strand, referenceDnaStringSet, location){
   
   #Convert strand annotation
@@ -21,7 +19,7 @@ assesSREsupportSD <- function(SDcor, varType, altNuc, gen_cord, chromosome,
   ## Get HZEI int of ref sequence
   SD_HZEI_up <- calculateHZEIint(sequence_range)+0
   
-  if(varType == "DEL"){
+  if(variationType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
     if(location == "upstream")  upborder <- upborder+deletion_length
   }
@@ -36,81 +34,102 @@ assesSREsupportSD <- function(SDcor, varType, altNuc, gen_cord, chromosome,
   donor_cords_up <- c((SDcor-upborder) : (SDcor+downborder))
   if(strand == "-1") donor_cords_up <- rev(donor_cords_up)
   
-  #HZEI integral calculation
+  ## HZEI int is the same
   SD_HZEI_up_alt <- SD_HZEI_up
   
+  ## Calculate HZEI int in case variation lies within range
   if(gen_cord %in% donor_cords_up){
     
     sdHBS_SNV <- strsplit(sequence_range, "")[[1]]
     
     pos <- which(donor_cords_up %in% gen_cord)
-    if(varType == "SNV" | varType == "DUP" ) sdHBS_SNV[pos] <- altNuc
-    if(varType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
-    if(varType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], altNuc)
-    
+    if(variationType == "SNV" | variationType == "DUP" ) sdHBS_SNV[pos] <- altNuc
+    if(variationType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
+    if(variationType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], altNuc)
     sdHBS_SNV <-  paste(sdHBS_SNV, collapse = "")
+    
+    if(variationType == "INS" & 
+       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,1+insertion_length,
+                                                   nchar(sdHBS_SNV))
+    if(variationType == "INS" & 
+       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
+                                                     nchar(sdHBS_SNV)-insertion_length)
+    if(variationType == "DUP" & 
+       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,2,
+                                                   nchar(sdHBS_SNV))
+    if(variationType == "DUP" & 
+       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
+                                                     nchar(sdHBS_SNV)-1)
+    
     SD_HZEI_up_alt <- calculateHZEIint(sdHBS_SNV)+0
     
   }
   
   
-  #Get the respective genomic sequence downstream of the SD
-  upborder <- 4
+  ## Get the respective genomic sequence 
+  ## Downstream of the SD
+  upborder <- -4
   downborder <- 63
   
-  if(varType == "DEL"){
+  ## Get reference sequence upstream of SD
+  sequence_range <- getReferenceSequence(chromosome = chromosome, 
+                                         indexCoordinate = SDcor,
+                                         upRange = upborder, downRange = downborder, 
+                                         strand = strand, referenceDnaStringSet)
+  ## Get HZEI int of ref sequence
+  SD_HZEI_down <- calculateHZEIint(sequence_range)+0
+  
+  if(variationType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
     if(location == "upstream")  upborder <- upborder+deletion_length
   }
   
-  test2 <- Views(s[[as.character(chromosome)]], start=SDcor+upborder, end=SDcor+downborder)
-  if(strand == -1)  test2 <- Views(s[[as.character(chromosome)]], start=SDcor-downborder, end=SDcor-upborder)
+  ## Get the surrounding reference sequence
+  sequence_range <- getReferenceSequence(chromosome = chromosome, 
+                                         indexCoordinate = SDcor,
+                                         upRange = upborder, downRange = downborder, 
+                                         strand = strand, referenceDnaStringSet)
   
-  test <- as.character(test2)
-  sequence_range <-  as.character(test2)
-  test3 <- data.frame(test2@ranges)
+  ## Get coordinate range
+  donor_cords_down <- c((SDcor-upborder) : (SDcor+downborder))
+  if(strand == "-1") donor_cords_down <- rev(donor_cords_down)
   
-  #Minus strand sequence manipulation
-  sequence_range[strand=="-1"] <- gsub("A","t",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("C","g",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("T","a",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("G","c",sequence_range[strand=="-1"])
-  
-  sequence_range[strand=="-1"] <- gsub("t","T",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("g","G",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("a","A",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- gsub("c","C",sequence_range[strand=="-1"])
-  sequence_range[strand=="-1"] <- reverse(sequence_range[strand=="-1"])
-  
-  #Get coordinates
-  donor_cords_down <- c((SDcor+4) : (SDcor+63))
-  if(strand == "-1") donor_cords_down <- rev(c((SDcor-63) : (SDcor-4)))
-  
-  SD_seq_surround_down <- sequence_range
-  
-  #HZEI integral calculation
-  SD_HZEI_down <- calculateHZEIint(sequence_range)+0
-  SD_HZEI_down_alt <- calculateHZEIint(sequence_range)+0
-  
+  ## HZEI int is the same
+  SD_HZEI_down_alt <- SD_HZEI_down
+ 
+  ## In case variation lies within sequence range
   if(gen_cord %in% donor_cords_down){
     
     sdHBS_SNV <- strsplit(sequence_range, "")[[1]]
     
     pos <- which(donor_cords_down %in% gen_cord)
-    if(varType == "SNV" | varType == "DUP" ) sdHBS_SNV[pos] <- altNuc
-    if(varType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
-    if(varType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], altNuc)
-    
-    sdHBS_SNV[pos] <- altNuc
+    if(variationType == "SNV" | variationType == "DUP" ) sdHBS_SNV[pos] <- altNuc
+    if(variationType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
+    if(variationType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], altNuc)
     sdHBS_SNV <-  paste(sdHBS_SNV, collapse = "")
+    
+    if(variationType == "INS" & 
+       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,1+insertion_length,
+                                                   nchar(sdHBS_SNV))
+    if(variationType == "INS" & 
+       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
+                                                     nchar(sdHBS_SNV)-insertion_length)
+    if(variationType == "DUP" & 
+       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,2,
+                                                   nchar(sdHBS_SNV))
+    if(variationType == "DUP" & 
+       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
+                                                     nchar(sdHBS_SNV)-1)
+    
+    ## Get alt HZEI integral
     SD_HZEI_down_alt <- calculateHZEIint(sdHBS_SNV)+0
     
   }
   
   
   # Calculate SD SRE support
-  res["SD SRE support"] <- SD_HZEI_up - SD_HZEI_down
-  res["SD SRE support alternative"] <- SD_HZEI_up_alt - SD_HZEI_down_alt
+  a <- SD_HZEI_up - SD_HZEI_down
+  b <- SD_HZEI_up_alt - SD_HZEI_down_alt
 
-  return(sdSREinfo)
+  return(c(a,b))
 }

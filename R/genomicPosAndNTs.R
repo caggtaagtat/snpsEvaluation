@@ -1,4 +1,4 @@
-genomicPosAndNTs <- function(anno, referenceDnaStringSet, transcriptID, curTrans){
+genomicPosAndNTs <- function(anno, referenceDnaStringSet, transcriptID, transCur){
   
   deletion_length <- 0
   insertion_length <- 0
@@ -31,7 +31,7 @@ genomicPosAndNTs <- function(anno, referenceDnaStringSet, transcriptID, curTrans
       }
       
       results <- getSeqInfoFromVariation(referenceDnaStringSet, transcriptID,
-                                         pseudoVariation , ntWindow=20, curTrans,
+                                         pseudoVariation , ntWindow=20, transCur,
                                          gene2transcript=gene2transcript)
       
       replace_coord <- results$genomicCoordinate
@@ -57,7 +57,7 @@ genomicPosAndNTs <- function(anno, referenceDnaStringSet, transcriptID, curTrans
       
       
       results <- getSeqInfoFromVariation(referenceDnaStringSet, transcriptID,
-                                         pseudoVariation, ntWindow=20, curTrans,
+                                         pseudoVariation, ntWindow=20, transCur,
                                          gene2transcript=gene2transcript)
       
       replace_coord <- results$genomicCoordinate
@@ -69,7 +69,7 @@ genomicPosAndNTs <- function(anno, referenceDnaStringSet, transcriptID, curTrans
     pseudoVariation <- paste0(strsplit(anno, "dup")[[1]][[1]], "A>T")
     
     results <- getSeqInfoFromVariation(referenceDnaStringSet, transcriptID,
-                                       pseudoVariation, ntWindow=20, curTrans,
+                                       pseudoVariation, ntWindow=20, transCur,
                                        gene2transcript=gene2transcript)
     
     replace_coord <- results$genomicCoordinate
