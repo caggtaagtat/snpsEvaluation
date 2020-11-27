@@ -1,5 +1,5 @@
 ## Enter info about nearest SD
-getInfoSDanno <- function(splicesites, variationType, alt_nuc, genomic_coordinate,
+getInfoSDanno <- function(splicesites, varType, altNuc, gen_cord,
                           chromosome, strand, referenceDnaStringSet,deletion_length,
                           insertion_length){
   
@@ -29,7 +29,7 @@ getInfoSDanno <- function(splicesites, variationType, alt_nuc, genomic_coordinat
   if(substr(sequence_range, 4,5) == "GT") listOfResults["SD HBS ref"] <- hbg$hbs[hbg$seq == sequence_range] 
   if(substr(sequence_range, 4,5) != "GT") listOfResults["SD HBS ref"] <- 999
   
-  if(variationType == "DEL"){
+  if(varType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
     if(location == "upstream")  upborder <- upborder+deletion_length
   }
@@ -50,28 +50,28 @@ getInfoSDanno <- function(splicesites, variationType, alt_nuc, genomic_coordinat
   
   ## In case genomic coordiante lies within 
   ## SD sequence re-calcualte HBS score for alternative seq
-  if(genomic_coordinate %in% donor_cords){
+  if(gen_cord %in% donor_cords){
     
     sdHBS <- listOfResults$'SD HBS ref'
     sdHBS_SNV <- strsplit(sequence_range, "")[[1]]
     
     ## Calcualte new HBS
-    pos <- which(donor_cords %in% genomic_coordinate)
-    if(variationType == "SNV" | variationType == "DUP" ) sdHBS_SNV[pos] <- alt_nuc
-    if(variationType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
-    if(variationType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], alt_nuc)
+    pos <- which(donor_cords %in% gen_cord)
+    if(varType == "SNV" | varType == "DUP" ) sdHBS_SNV[pos] <- altNuc
+    if(varType == "DEL") sdHBS_SNV[pos:(pos+deletion_length-1)] <- ""
+    if(varType == "INS") sdHBS_SNV[pos] <- paste0(sdHBS_SNV[pos], altNuc)
     sdHBS_SNV <- paste(sdHBS_SNV, collapse = "")
     
-    if(variationType == "INS" & 
+    if(varType == "INS" & 
        location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,1+insertion_length,
                                                     nchar(sdHBS_SNV))
-    if(variationType == "INS" & 
+    if(varType == "INS" & 
        location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
                                                    nchar(sdHBS_SNV)-insertion_length)
-    if(variationType == "DUP" & 
+    if(varType == "DUP" & 
        location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,2,
                                                    nchar(sdHBS_SNV))
-    if(variationType == "DUP" & 
+    if(varType == "DUP" & 
        location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
                                                      nchar(sdHBS_SNV)-1)
     

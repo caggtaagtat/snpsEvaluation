@@ -20,8 +20,10 @@ createOutputDF <- function(rowsDF){
                           Delta_SD_SRE_support_percent=0,
                           HBS_alt_overlapping_SDs=0,
                           HBS_diff_overlapping_SDs=0,
+                          HBS_diff_overlapping_SDs_vs_annotated=0,
                           MaxEnt_alt_overlapping_SAs=0,
                           MaxEnt_diff_overlapping_SAs=0,
+                          MaxEnt_diff_overlapping_SA_vs_annotated=0,
                           Maxent_alt_overlapping_SD_GC_sites=0,
                           Maxent_diff_overlapping_SD_GC_sites=0,
                           SD_HBS_ref=0,
@@ -32,6 +34,8 @@ createOutputDF <- function(rowsDF){
                           SNV_localized_relative_to_SA="",
                           length_of_next_exon=0,
                           variation_type="",
+                          second_up_ss_strength=0,
+                          second_down_ss_strength=0,
                           gene_strand=0,
                           chromosome="",
                           ENSEMBL_transcriptID="",
@@ -42,8 +46,6 @@ createOutputDF <- function(rowsDF){
                           SD_sequence_surrounding_with_SNP="",
                           SA_sequence_surrounding="",
                           SA_sequence_surrounding_with_SNP="",
-                          second_up_ss_strength=0,
-                          second_down_ss_strength=0,
                           Potentially_interesting="",
                           ID=seq_len(rowsDF))
   

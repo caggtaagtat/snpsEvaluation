@@ -78,7 +78,7 @@ assesSREsupportSA <- function(SAcor, variationType, altNuc, gen_cord, chromosome
                                          strand = strand, referenceDnaStringSet)
   ## Get HZEI int of ref sequence
   SA_HZEI_down <- calculateHZEIint(sequence_range)+0
-  
+
   if(variationType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
     if(location == "upstream")  upborder <- upborder+deletion_length
@@ -122,6 +122,7 @@ assesSREsupportSA <- function(SAcor, variationType, altNuc, gen_cord, chromosome
                                                      nchar(SAHBS_SNV)-1)
     
     ## Get alt HZEI integral
+    SAHBS_SNV <- paste(SAHBS_SNV, collapse = "")
     SA_HZEI_down_alt <- calculateHZEIint(SAHBS_SNV)+0
     
   }

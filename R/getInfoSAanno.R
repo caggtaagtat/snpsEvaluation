@@ -27,7 +27,7 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
                                          strand = strand, referenceDnaStringSet)
   
   listOfResults["SA MES ref"] <- as.numeric(calculateMaxEntScanScore(sequence_range, 3))
-  
+
   if(varType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
     if(location == "upstream")  upborder <- upborder+deletion_length
@@ -82,7 +82,9 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
     if(pos== 19 | pos== 20 | saMES_SNV == -999)  listOfResults["SA MES delta"] <- 9999
   }
   
+  ## Save data fro output
   listOfResults$SAcor <- SAcor
   listOfResults$SAloc <- location
+  
   return(listOfResults)
 }
