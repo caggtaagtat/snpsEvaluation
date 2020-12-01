@@ -27,6 +27,7 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
                                          strand = strand, referenceDnaStringSet)
   
   listOfResults["SA MES ref"] <- as.numeric(calculateMaxEntScanScore(sequence_range, 3))
+  
 
   if(varType == "DEL"){
     if(location == "downstream")  downborder <- downborder+deletion_length
@@ -58,20 +59,25 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
     if(varType == "SNV" | varType == "DUP" ) saMES_SNV[pos] <- altNuc
     if(varType == "DEL") saMES_SNV[pos:(pos+deletion_length-1)] <- ""
     if(varType == "INS") saMES_SNV[pos] <- paste0(saMES_SNV[pos], altNuc)
-    saMES_SNV <- paste(saMES_SNV, collapse = "")
+    
+    ## Alter coordinates
+    if(varType == "DUP") acceptor_cords[pos] <- paste(rep(acceptor_cords[pos],
+                                                          insertion_length), collapse=" ")
+    if(varType == "DEL") acceptor_cords[pos:(pos+deletion_length-1)] <- acceptor_cords[pos-1]
+    if(varType == "INS") acceptor_cords[pos] <- paste(rep(acceptor_cords[pos],
+                                                              insertion_length), collapse=" ")
+    
     
     if(varType == "INS" & 
-       location == "upstream") saMES_SNV <- substr(saMES_SNV,1+insertion_length,
-                                                   nchar(saMES_SNV))
+       location == "upstream") saMES_SNV <- saMES_SNV[1+insertion_length: nchar(saMES_SNV)]
     if(varType == "INS" & 
-       location == "downstream") saMES_SNV <- substr(saMES_SNV,1,
-                                                     nchar(saMES_SNV)-insertion_length)
+       location == "downstream") saMES_SNV <- saMES_SNV[1:(nchar(saMES_SNV)-insertion_length)]
     if(varType == "DUP" & 
-       location == "upstream") saMES_SNV <- substr(saMES_SNV,2,
-                                                   nchar(saMES_SNV))
+       location == "upstream") saMES_SNV <- saMES_SNV[2: nchar(saMES_SNV)]
     if(varType == "DUP" & 
-       location == "downstream") saMES_SNV <- substr(saMES_SNV,1,
-                                                     nchar(saMES_SNV)-1)
+       location == "downstream") saMES_SNV <- saMES_SNV[1:(nchar(saMES_SNV)-1)]
+    
+    saMES_SNV <- paste(saMES_SNV, collapse = "")
     
     ## Save difference and alternative MES
     saMES_SNV <- as.numeric(calculateMaxEntScanScore(saMES_SNV, 3))

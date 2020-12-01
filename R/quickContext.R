@@ -13,12 +13,17 @@ quickContext <- function(chromosome, gen_cord, strand,
                                            upRange = upborder, downRange = downborder, 
                                            strand = strand, referenceDnaStringSet)
     
+    ## Sequence range
+    general_cords_ref <- c((gen_cord-upborder) : (gen_cord+downborder))
+    if(strand == "-1") general_cords_ref <- rev(general_cords_ref)
+    
     ## In case of a deletion widen the sequence range 
     ## in both directions by half of the deletion length
     if(varType == "DEL"){
-        halfDelLength <- ceiling(deletion_length/2)
+        halfDelLengthBT <- deletion_length%%2
+        halfDelLength <- floor(deletion_length/2)
         downborder <- downborder + halfDelLength
-        upborder <- upborder + halfDelLength
+        upborder <- upborder + halfDelLength+halfDelLengthBT
     }
     
     ## Get the surrounding reference sequence
@@ -33,7 +38,7 @@ quickContext <- function(chromosome, gen_cord, strand,
     
     ## Sequence range
     general_cords <- c((gen_cord-upborder) : (gen_cord+downborder))
-    if(strand == "-1") general_cords <- rev(acceptor_cords)
+    if(strand == "-1") general_cords <- rev(general_cords)
     
     varPoint <- which(general_cords %in% gen_cord)
     
@@ -41,6 +46,12 @@ quickContext <- function(chromosome, gen_cord, strand,
     if(varType == "SNV" | varType == "DUP" ) alter[varPoint] <- altNuc
     if(varType == "DEL") alter[varPoint:(varPoint+deletion_length-1)] <- ""
     if(varType == "INS") alter[varPoint] <- paste0(alter[varPoint], altNuc)
+    
+    ## Alter coordinates
+    if(varType == "DUP") general_cords[varPoint] <- paste(general_cords[varPoint], collapse="")
+    if(varType == "DEL") general_cords[varPoint:(varPoint+deletion_length-1)] <- general_cords[varPoint-1]
+    if(varType == "INS") general_cords[varPoint] <- paste(rep(general_cords[varPoint],
+                                                              insertion_length), collapse="")
     
     ## Save alternative sequence
     altSurroundingSeq <-  paste(alter, collapse="")
@@ -57,10 +68,26 @@ quickContext <- function(chromosome, gen_cord, strand,
     
     if(varType == "DUP") altSurroundingSeq <- substr(altSurroundingSeq, 2, nchar(altSurroundingSeq) )
     
+    ## Alter coordinates a second time
+    if(varType == "DUP") general_cords <- general_cords[-1]
+    
+    if(varType == "INS"){
+        if(insertion_length == 1){
+            general_cords <- general_cords[-1]
+        }else{
+            his <- ceiling(insertion_length/2)
+            general_cords <- general_cords[1+his, length(general_cords)-his]
+        }
+    } 
+    
     ## Calcualte Delta HZEI
     surroundingSeqHZEI <- calculateHZEIint(surroundingSeq)
     altSurroundingSeqHZEI <- calculateHZEIint(altSurroundingSeq)
     surroundingSeqHzeiDIFF <- altSurroundingSeqHZEI - surroundingSeqHZEI
     
-  return(c(surroundingSeqHzeiDIFF, surroundingSeq, altSurroundingSeq ))
+  return(c(surroundingSeqHzeiDIFF, 
+           surroundingSeq, 
+           altSurroundingSeq, 
+           paste(general_cords_ref, collapse = " "),
+           paste(general_cords, collapse = " ")))
 }

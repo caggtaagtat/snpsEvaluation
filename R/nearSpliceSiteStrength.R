@@ -4,6 +4,9 @@ nearSpliceSiteStrength <- function(transCur, gen_cord, strand, context){
   if(strand== "+") strand <- "1"
   if(strand== "-") strand <- "-1"
   
+  second_up_ss_strength   <- 9999
+  second_down_ss_strength <- 9999
+  
   ## If located within exons
   if(context == "exonic"){
 
