@@ -34,9 +34,14 @@ getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq,
   durchzahl <- durchzahl[durchzahl$coordinate != SDcor,]
   durchzahl2 <- durchzahl2[durchzahl2$coordinate != SDcor,]
   
+  ## Save coordinate for SRP support calculation
+  durchzahl2 <- durchzahl2[order(durchzahl2$hbs, decreasing = T),]
+  splicesiteInfo$sd_coord <- durchzahl2$coordinate[1]
+  
   splicesiteInfo$sd_max_ref <- max(durchzahl$hbs)
   splicesiteInfo$sd_max_alt <- max(durchzahl2$hbs)
   splicesiteInfo$sd_max_diff <- splicesiteInfo$sd_max_alt - splicesiteInfo$sd_max_ref
+
   
   rm(durchzahl, durchzahl2)
   
@@ -72,7 +77,10 @@ getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq,
   durchzahl$hbs[durchzahl$seq9   != "GC"] <- 0
   durchzahl2$hbs[durchzahl2$seq9 != "GC"] <- 0
   
-
+  ## Save coordinate for SRP support calculation
+  durchzahl2 <- durchzahl2[order(durchzahl2$hbs, decreasing = T),]
+  splicesiteInfo$sd_coordGC <- durchzahl2$coordinate[1]
+  
   splicesiteInfo$sd_max_refGC <- max(durchzahl$hbs)
   splicesiteInfo$sd_max_altGC  <- max(durchzahl2$hbs)
   splicesiteInfo$sd_max_diffGC  <- splicesiteInfo$sd_max_altGC - splicesiteInfo$sd_max_refGC
@@ -86,14 +94,14 @@ getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq,
   altsurroundingSeqSAs <- substr(altSurroundingSeq, 27, nchar(altSurroundingSeq)-26)
   subcoordSA <- strsplit(coordinates," ")[[1]]
   subcoordSA <- subcoordSA[c(27:(nchar(surroundingSeq)-26))]
-  subcoordSAalt <- strsplit(coordinates," ")[[1]]
+  subcoordSAalt <- strsplit(coordinatesAlt," ")[[1]]
   subcoordSAalt <- subcoordSAalt[c(27:(nchar(surroundingSeq)-26))]
   
   durchzahl <- strsplit(altsurroundingSeqSAs, "")[[1]]
   d <- getOverlappingVectorsFromVector(durchzahl, 23, 22)
   d <- as.character(lapply(d, function(x){paste(x, collapse = "")}))
   durchzahl <- data.frame(seq9 = d, hbs=0)
-  durchzahl$coordinates <- as.numeric(subcoordSA)+20
+  durchzahl$coordinates <- as.numeric(subcoordSAalt)+20
   durchzahl2 <- durchzahl[nchar(durchzahl$seq9) == 23,]
   
   durchzahl <- strsplit(surroundingSeqSAs, "")[[1]]
@@ -110,6 +118,10 @@ getAffectedSpliceSites <- function(surroundingSeq, altSurroundingSeq,
   ## Remove annotated SD
   durchzahl <- durchzahl[durchzahl$coordinate != SAcor,]
   durchzahl2 <- durchzahl2[durchzahl2$coordinate != SAcor,]
+  
+  ## Save coordinate for SRP support calculation
+  durchzahl2 <- durchzahl2[order(durchzahl2$maxent3, decreasing = T),]
+  splicesiteInfo$sa_coord <- durchzahl2$coordinate[1]
   
   splicesiteInfo$sa_max_ref <- max(durchzahl$maxent3 )
   splicesiteInfo$sa_max_alt <- max(durchzahl2$maxent3 )

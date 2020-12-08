@@ -2,7 +2,9 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
                                       HBSaltOver, HBSaltOverDiff, HBSaltOverDiffAno,
                                       MESaltOver, MESaltOverDiff, MESaltOverDiffAno,
                                       posToSD, posToSA, sdHBSalt, saMESalt, sdSREdiffperc,
-                                      sdSRE, sdSREalt, saSRE, saSREalt, saSREdiffperc){
+                                      sdSRE, sdSREalt, saSRE, saSREalt, saSREdiffperc,
+                                      dist_to_SD, dist_to_SA, GTcorSRE, GCcorSRE,
+                                      AGcorSRE){
   
   ##Invert location
   if(posToSD == "upstream") SDposToSNV <- "downstream"
@@ -29,16 +31,16 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   
   ## Is strength of annotated Donor affected
   SDdiff <- sdHBSalt - sdHBS
-  if(SDdiff < -3.4) impactReport <- paste0(impactReport,
-                                             "HBS of annotated SD reduced by ",SDdiff,
+  if(SDdiff < -2) impactReport <- paste0(impactReport,
+                                             "HBS of annotated SD reduced from ",sdHBS,
                                          " to ", sdHBSalt, " (",
                                              SDcor, "). ")
   
   
   ## Is strength of annotated Acceptor affected
   SAdiff <- saMESalt - saMES
-  if(SAdiff < -3.4) impactReport <- paste0(impactReport,
-                                         "MaxEnt score of annotated SA reduced by ",SAdiff,
+  if(SAdiff < -3.3) impactReport <- paste0(impactReport,
+                                         "MaxEnt score of annotated SA reduced from ",saMES,
                                          " to ", saMESalt, " (",
                                          SAcor, "). ")
   
@@ -49,7 +51,9 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   if(posToSD == "upstream"){
     
     ## Does Variation lead to new SD upstream of the annotated one
-    newSD <- HBSaltOverDiff > 3.4 & HBSaltOverDiffAno > -3.4 & HBSaltOverDiffAno != 0
+    SDSREdiff <- GTcorSRE-sdSRE
+    SDSREdiff <- SDSREdiff/sdSRE
+    newSD <- HBSaltOverDiff > 2 & HBSaltOverDiffAno/sdHBS > -0.5 & SDSREdiff > -3 
     if(newSD) impactReport <-  paste0(impactReport,"SD created/strengthened with/to ",HBSaltOver, " HBS. ",
                                       "Might compete with ",SDposToSNV," annotated SD (", SDcor,
                                       " with ", sdHBS, " HBS). ")
@@ -58,7 +62,9 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   if(posToSD == "downstream"){
     
     ## Does Variation lead to new SD upstream of the annotated one
-    newSD <- HBSaltOverDiff > 3.4 & HBSaltOverDiffAno > -1 & HBSaltOverDiffAno != 0
+    SDSREdiff <- GTcorSRE-sdSRE
+    SDSREdiff <- SDSREdiff/sdSRE
+    newSD <- HBSaltOverDiff > 2  & HBSaltOverDiffAno/sdHBS > -0.5 & SDSREdiff > -3 & dist_to_SD < 500
     if(newSD) impactReport <-  paste0(impactReport,"SD created/strengthened with/to ",HBSaltOver, " HBS. ",
                                       "Might compete with ",SDposToSNV," annotated SD (", SDcor,
                                       " with ", sdHBS, " HBS). ")
@@ -67,13 +73,12 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   
   
   
-  
-  
   ## Creats new acceptor
   if(posToSA == "upstream"){
-    
+    SASREdiff <- AGcorSRE-saSRE
+    SASREdiff <- SASREdiff/saSRE
     ## Does Variation lead to new SA site upstream of the annotated one
-    newSA <- MESaltOverDiff > 3.4 & MESaltOverDiffAno > -1 & MESaltOverDiffAno != 0
+    newSA <- MESaltOverDiff > 3.3 & MESaltOverDiffAno/saMES > -0.5 & SASREdiff > -3
     if(newSA) impactReport <-  paste0(impactReport,"SA created/strengthened with/to ",MESaltOver, " MaxEnt score. ",
                                       "Might compete with ",SAposToSNV," annotated SA (", SAcor,
                                       " with ",saMES, " MaxEnt score). ")
@@ -81,9 +86,10 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   }
   
   if(posToSA == "downstream"){
-    
+    SASREdiff <- AGcorSRE-saSRE
+    SASREdiff <- SASREdiff/saSRE
     ## Does Variation lead to new SA site downstream of the annotated one
-    newSA <- MESaltOverDiff > 3.4 & MESaltOverDiffAno > -3.4 & MESaltOverDiffAno != 0
+    newSA <- MESaltOverDiff > 3.3 & MESaltOverDiffAno > -3.3 & SASREdiff > -3 & dist_to_SA < 500
     if(newSA) impactReport <-  paste0(impactReport,"SA created/strengthened with/to ",MESaltOver, " MaxEnt score. ",
                                       "Might compete with ",SAposToSNV," annotated SA (", SAcor,
                                       " with ",saMES, " MaxEnt score). ")
@@ -95,21 +101,25 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   ## Looking at SRE support
   #sdSRE, sdSREalt, saSRE, saSREalt, sdSREdiffperc, saSREdiffperc
   
+  sdSREdiff <- sdSREalt - sdSRE
+  sdSREdiffperc <- abs(sdSREdiff/sdSRE*100)
+  if(sdSREdiff < 0) sdSREdiffperc <- sdSREdiffperc*-1
+  
   ## SD SRE support reduces by at least a fourth and makes the 
   ## alterative SRE support is below average
-  sdSREtest <- sdSREdiffperc < -25 &  sdSREalt < 291.5 &  sdSRE > 291.5
+  sdSREtest <- sdSREdiffperc < -25 &  sdSREalt < 291.5 &  sdSRE > 291.5 & sdSREdiff < -58
   
   if(sdSREtest) impactReport <-  paste0(impactReport,"SRE support of annotated SD (",
                                         SDcor,") decreases from over to below average. ")
   
   
-  sdSREtest <- sdSREdiffperc < -25 &  sdSREalt < 291.5 &  sdSRE < 291.5
+  sdSREtest <- sdSREdiffperc < -25 &  sdSREalt < 291.5 &  sdSRE < 291.5 & sdSREdiff < -58
   
   if(sdSREtest) impactReport <-  paste0(impactReport,"Below average SRE support of annotated SD (",
                                         SDcor,") decreases. ")
   
   
-  sdSREtest <- sdSREdiffperc < -25 &  sdHBSalt < 13.6
+  sdSREtest <- sdSREdiffperc < -25 &  sdHBSalt < 13.6 & sdSREdiff > -58
   
   if(sdSREtest) impactReport <-  paste0(impactReport,"SRE support of weak annotated SD (",
                                         SDcor,") decreases. ")
@@ -120,19 +130,23 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
   
   ## SA SRE support reduces by at least a fourth and makes the 
   ## alterative SRE support is below average
-  saSREtest <- saSREdiffperc < -25 &  saSREalt < 377.2 &  saSRE > 377.2
+  saSREdiff <- saSREalt - saSRE
+  saSREdiffperc <- abs(saSREdiff/saSRE*100)
+  if(saSREdiff < 0) saSREdiffperc <- saSREdiffperc*-1
+  
+  saSREtest <- saSREdiffperc < -25 &  saSREalt < 377.2 &  saSRE > 377.2 & saSREdiff < -75
   
   if(saSREtest) impactReport <-  paste0(impactReport,"SRE support of annotated SA (",
                                         SAcor,") decreases from over to below average. ")
   
   
-  saSREtest <- saSREdiffperc < -25 &  saSREalt < 377.2 &  saSRE < 377.2
+  saSREtest <- saSREdiffperc < -25 &  saSREalt < 377.2 &  saSRE < 377.2 & saSREdiff < -75
   
   if(saSREtest) impactReport <-  paste0(impactReport,"Below average SRE support of annotated SA (",
                                         SAcor,") decreases. ")
   
   
-  saSREtest <- saSREdiffperc < -25 &  saMESalt < 6.94
+  saSREtest <- saSREdiffperc < -25 &  saMESalt < 6.94 & saSREdiff < -75
   
   if(saSREtest) impactReport <-  paste0(impactReport,"SRE support of weak annotated SA (",
                                         SAcor,") decreases. ")

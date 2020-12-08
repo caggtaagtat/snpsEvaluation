@@ -21,11 +21,14 @@ createOutputDocu <- function(){
                "HBS alt overlapping SDs",
                "HBS diff overlapping SDs",
                "HBS diff overlapping SDs vs annotated",
+               "SRE_support_alt_overlapping_SD",
                "MaxEnt alt overlapping SAs",
                "MaxEnt diff overlapping SAs",
                "MaxEnt diff overlapping SA vs annotated",
+               "SRE_support_alt_overlapping_SA",
                "Maxent alt overlapping SD GC sites",
                "Maxent diff overlapping SD GC sites",
+               "SRE_support_alt_overlapping_GCsite",
                "SD HBS ref",
                "SD HBS alt",
                "SA MaxEnt ref",
@@ -47,6 +50,8 @@ createOutputDocu <- function(){
                "SA sequence surrounding",
                "SA sequence surrounding with SNP",
                "Potentially interesting",
+               "Next_SA_coordinate"=0,
+               "Next_SD_coordinate"=0,
                "ID")
   
   documentation <- c(
@@ -56,26 +61,26 @@ createOutputDocu <- function(){
        
        "Differenz im HZEI-integral durch die variation",
        
-       "Änderungen im MaxEnt score des annotierten Akzeptor",
+       "Aenderungen im MaxEnt score des annotierten Akzeptor",
        
        "Ist das AG Dinucleotid des annotierten Akzeptor betroffen?",
                                                                                                                                                                                                                                                                                                                
-       paste0("Änderungen im HBond score des annotierten Donors. Ist 9999,", 
-              "falls das GT des Donors durch die Variation gestört wird"),                                                                                                                                                       
+       paste0("Aenderungen im HBond score des annotierten Donors. Ist 9999,", 
+              "falls das GT des Donors durch die Variation gestoert wird"),                                                                                                                                                       
        
-       "Ist das GT Dinucleotid des annotierten Donors betroffen?",  
+       "Ist das GT dinucleotid des annotierten Donors betroffen?",  
        
-       "Entfernung der variation zum nächsten annotierten SD", 
+       "Entfernung der variation zum naechsten annotierten SD", 
        
-       "Entfernung der Variation zum nächsten annotierten SA", 
+       "Entfernung der Variation zum naechsten annotierten SA", 
        
        "Ist die Variation exonisch oder intronisch im Transkript",
        
        paste0("HZEI-Integral downstream minus HZEI-Integral upstream des", 
-       "nächstgelegenen SA in Reference-Sequzenz"),   
+       "naechstgelegenen SA in Reference-Sequzenz"),   
        
        paste0("HZEI-Integral downstream minus HZEI-Integral upstream des", 
-              "nächstgelegenen SA in Reference-Sequzenz mit der Variation"),                                                                                                                                                                                                                     
+              "naechstgelegenen SA in Reference-Sequzenz mit der Variation"),                                                                                                                                                                                                                     
        
        paste0("Differenz im HZEI-Integral Gewicht des SA mit und ohne",  
        "Variation"),    
@@ -84,47 +89,56 @@ createOutputDocu <- function(){
               "SA SRE support in %"),              
        
        paste0("HZEI-Integral upstream minus HZEI-Integral downstream des",  
-       "nächstgelegenen SD in Reference-Sequzenz"),          
+       "naechstgelegenen SD in Reference-Sequzenz"),          
        
        paste0("HZEI-Integral upstream minus HZEI-Integral downstream des", 
-              "nächstgelegenen SD mit der Variation"),     
+              "naechstgelegenen SD mit der Variation"),     
        
        "Differenz im HZEI-Integral Gewicht des SD", 
        
        paste0("(Differenz im HZEI-Integral Gewicht des SD) geteilt durch", 
        "SD SRE support in %"),                         
        
-       paste0("Maximaler HBS von überlappenden SD-Sequenzen in",  
+       paste0("Maximaler HBS von ueberlappenden SD-Sequenzen in",  
               "Referenz-Sequenz mit eingebauter Variation"),    
        
-       paste0("Differenz des maximalen HBS von überlappenden",  
+       paste0("Differenz des maximalen HBS von ueberlappenden",  
        "SD-Sequenzen. Unterschied nach Einbauen der Variation",
               "in Referenz-Sequenz"),     
        
-       paste0("Differenz des maximalen HBS von überlappenden",  
-       "SD-Sequenzen zu dem HBS des nächstegelegenen Donors.",  
+       paste0("Differenz des maximalen HBS von ueberlappenden",  
+       "SD-Sequenzen zu dem HBS des naechstegelegenen Donors.",  
        "Unterschied nach Einbauen der Variation
        in Referenz-Sequenz"), 
        
-       paste0("Maximaler MaxEnt score von überlappenden SA-Sequenzen", 
+       paste0("SRE support der ueberlappenden SD-site mit dem hoechsten",  
+              "HBond score"), 
+       
+       paste0("Maximaler MaxEnt score von ueberlappenden SA-Sequenzen", 
        "in Referenz-Sequenz mit eingebauter Variation"),     
        
-       paste0("Differenz des maximalen MaxEnt scores  von überlappenden", 
+       paste0("Differenz des maximalen MaxEnt scores  von ueberlappenden", 
               "SA-Sequenzen. Unterschied nach Einbauen der Variation", 
                "in Referenz-Sequenz"), 
        
-       paste0("Differenz des maximalen MaxEnt scores von überlappenden",  
-              "SA-Sequenzen zu dem MaxEnt scores des nächstegelegenen",  
+       paste0("Differenz des maximalen MaxEnt scores von ueberlappenden",  
+              "SA-Sequenzen zu dem MaxEnt scores des naechstegelegenen",  
        "Akzeptors Unterschied nach Einbauen der Variation", 
-              "in Referenz-Sequenz"), 
+              "in Referenz-Sequenz"),
        
-       paste0("Maximaler MaxEnt score von überlappenden SD-Sequenzen", 
+       paste0("SRE support der ueberlappenden SA-site mit dem hoechsten",  
+              "MaxEnt score"), 
+       
+       paste0("Maximaler MaxEnt score von ueberlappenden SD-Sequenzen", 
        "mit einem GC-Dinukleotid auf SD Position +/+ in ", 
               "Referenz-Sequenz mit eingebauter Variation"),    
        
-       paste0("Differenz des maximalen MaxEnt score  von überlappenden", 
+       paste0("Differenz des maximalen MaxEnt score  von ueberlappenden", 
        "SD-Sequenzen mit einem GC-Dinukleotid auf SD Position +/+.", 
               "Unterschied nach Einbauen der Variation in Referenz-Sequenz"),  
+       
+       paste0("SRE support der ueberlappenden GC-site mit dem hoechsten",  
+              "HBond score"), 
        
        "HBS des annotierten SD in Referenzgenom",       
        
@@ -135,20 +149,20 @@ createOutputDocu <- function(){
        
        "MaxEnt score des Akzeptors mit der enstprechenden Variation", 
        
-       paste0("Liegt der Variation upstream oder downstream zum nächsten", 
+       paste0("Liegt der Variation upstream oder downstream zum naechsten", 
        "annotierten SD"),             
        
-       paste0("Liegt der Variation upstream oder downstream zum nächsten", 
+       paste0("Liegt der Variation upstream oder downstream zum naechsten", 
               "annotierten SA"),                                         
        
-       "Länge des nächst-gelegenen Exons",                   
+       "Laenge des naechst-gelegenen Exons",                   
        
        "Typ der Variation (Variation, DEL, DUP oder INS)", 
        
-       paste0("Splice site Stärke der übernächsten splice site upstream der", 
+       paste0("Splice site Stärke der uebernaechsten splice site upstream der", 
        " Variation"),                                           
        
-       paste0("Splice site Stärke der übernächsten splice site downstream der", 
+       paste0("Splice site Stärke der uebernaechsten splice site downstream der", 
               "Variation"),                                       
        
        "gene_strand",   
@@ -164,7 +178,7 @@ createOutputDocu <- function(){
        "Exon_sequence" , 
        
        paste0("Umgebendes Sequenz-Window um die relevante SD Koordinate,", 
-       "die für die Berrechnung des SRP support genutzt wurde"),  
+       "die fuer die Berrechnung des SRP support genutzt wurde"),  
        
        paste0("nt up- and downstream Sequenze Window um die relevante SD",  
               "Koordinate mit der eingebauten Variation"),                
@@ -175,7 +189,11 @@ createOutputDocu <- function(){
        paste0("nt up- and downstream Sequenze Window um die relevante SA", 
               "Koordinate mit der eingebauten Variation"),              
        
-       "Warum könnte diese Variation interessant sein?",     
+       "Warum koennte diese Variation interessant sein?",  
+       
+       "Koordinat des naechstegelegenen SA",
+       
+       "Koordinat des naechstegelegenen SD",
        
        "neue Variation_ID" )
   

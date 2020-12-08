@@ -28,10 +28,22 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
   
   listOfResults["SA MES ref"] <- as.numeric(calculateMaxEntScanScore(sequence_range, 3))
   
-
+  ## Sequence range
+  acceptor_cords <- c((SAcor-upborder) : (SAcor+downborder))
+  if(strand == "-1") acceptor_cords <- rev(acceptor_cords)
+  
+  varCoos <- gen_cord
+  
+  ## In case of deletion increase SA sequence by
+  ## number of nt which overlapp with variation coordinates
   if(varType == "DEL"){
-    if(location == "downstream")  downborder <- downborder+deletion_length
-    if(location == "upstream")  upborder <- upborder+deletion_length
+      
+      ## check how many nucleotides overlap with SA sequence
+      varCoos <- c(gen_cord:(gen_cord+deletion_length-1))
+      varOverlapp <- sum(varCoos %in% acceptor_cords)
+          
+      if(location == "downstream")  downborder <- downborder+varOverlapp
+      if(location == "upstream")  upborder <- upborder+varOverlapp
   }
   
   ## Get the surrounding reference sequence
@@ -40,32 +52,21 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
                                          upRange = upborder, downRange = downborder, 
                                          strand = strand, referenceDnaStringSet)
   
-  ## Sequence range
-  acceptor_cords <- c((SAcor-upborder) : (SAcor+downborder))
-  if(strand == "-1") acceptor_cords <- rev(acceptor_cords)
-  
   ## If ref/alt SD has GT calculate MES
   listOfResults["SA MES delta"] <- 0
   listOfResults["SA MES alt"] <- listOfResults["SA MES ref"]
   
   ## In case genomic coordiante lies within 
   ## SA sequence re-calcualte MES score for alternative seq
-  if(gen_cord %in% acceptor_cords){
+  if(any(varCoos%in% acceptor_cords)){
 
     saMES_SNV <- strsplit(sequence_range, "")[[1]]
     
     ## Calcualte new MES
     pos <- which(acceptor_cords %in% gen_cord)
     if(varType == "SNV" | varType == "DUP" ) saMES_SNV[pos] <- altNuc
-    if(varType == "DEL") saMES_SNV[pos:(pos+deletion_length-1)] <- ""
+    if(varType == "DEL") saMES_SNV[pos:(pos+varOverlapp-1)] <- ""
     if(varType == "INS") saMES_SNV[pos] <- paste0(saMES_SNV[pos], altNuc)
-    
-    ## Alter coordinates
-    if(varType == "DUP") acceptor_cords[pos] <- paste(rep(acceptor_cords[pos],
-                                                          insertion_length), collapse=" ")
-    if(varType == "DEL") acceptor_cords[pos:(pos+deletion_length-1)] <- acceptor_cords[pos-1]
-    if(varType == "INS") acceptor_cords[pos] <- paste(rep(acceptor_cords[pos],
-                                                              insertion_length), collapse=" ")
     
     
     if(varType == "INS" & 

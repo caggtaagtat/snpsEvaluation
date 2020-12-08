@@ -23,6 +23,10 @@ convertTableForExcel <- function(snvTable){
 
   snvTable$SA_MaxEnt_ref  <- round(snvTable$SA_MaxEnt_ref,2)
   snvTable$SA_MaxEnt_alt  <- round(snvTable$SA_MaxEnt_alt,2)
+  
+  snvTable$SRE_support_alt_overlapping_SD <- round(  snvTable$SRE_support_alt_overlapping_SD,2)
+  snvTable$SRE_support_alt_overlapping_SA <- round(  snvTable$SRE_support_alt_overlapping_SA,2)
+  snvTable$SRE_support_alt_overlapping_GCsite <- round(snvTable$SRE_support_alt_overlapping_GCsite,2)
 
 
   ## Replace "." in every column with an ",", since excle transforms 

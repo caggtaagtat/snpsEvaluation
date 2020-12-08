@@ -29,9 +29,19 @@ getInfoSDanno <- function(splicesites, varType, altNuc, gen_cord,
   if(substr(sequence_range, 4,5) == "GT") listOfResults["SD HBS ref"] <- hbg$hbs[hbg$seq == sequence_range] 
   if(substr(sequence_range, 4,5) != "GT") listOfResults["SD HBS ref"] <- 999
   
+  ## Sequence range
+  donor_cords <- c((SDcor-upborder) : (SDcor+downborder))
+  if(strand == "-1") donor_cords <- rev(donor_cords)
+  
+  ## In case of deletion increase SD sequence by
+  ## number of nt which overlapp with variation coordinates
   if(varType == "DEL"){
-    if(location == "downstream")  downborder <- downborder+deletion_length
-    if(location == "upstream")  upborder <- upborder+deletion_length
+      ## check how many nucleotides overlap with SA sequence
+      varCoos <- c(gen_cord:(gen_cord+deletion_length-1))
+      varOverlapp <- sum(varCoos %in% donor_cords)
+      
+      if(location == "downstream")  downborder <- downborder+deletion_length
+      if(location == "upstream")  upborder <- upborder+deletion_length
   }
 
   ## Get the surrounding reference sequence
@@ -40,10 +50,6 @@ getInfoSDanno <- function(splicesites, varType, altNuc, gen_cord,
                                          upRange = upborder, downRange = downborder, 
                                          strand = strand, referenceDnaStringSet)
 
-  ## Sequence range
-  donor_cords <- c((SDcor-upborder) : (SDcor+downborder))
-  if(strand == "-1") donor_cords <- rev(donor_cords)
-  
   ## If ref/alt SD has GT calculate HBS
   listOfResults["SD HBS delta"] <- 0
   listOfResults["SD HBS alt"] <- listOfResults["SD HBS ref"]
@@ -63,17 +69,13 @@ getInfoSDanno <- function(splicesites, varType, altNuc, gen_cord,
     sdHBS_SNV <- paste(sdHBS_SNV, collapse = "")
     
     if(varType == "INS" & 
-       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,1+insertion_length,
-                                                    nchar(sdHBS_SNV))
+       location == "upstream") sdHBS_SNV <- sdHBS_SNV[1+insertion_length: nchar(sdHBS_SNV)]
     if(varType == "INS" & 
-       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
-                                                   nchar(sdHBS_SNV)-insertion_length)
+       location == "downstream") sdHBS_SNV <- sdHBS_SNV[1:(nchar(sdHBS_SNV)-insertion_length)]
     if(varType == "DUP" & 
-       location == "upstream") sdHBS_SNV <- substr(sdHBS_SNV,2,
-                                                   nchar(sdHBS_SNV))
+       location == "upstream") sdHBS_SNV <- sdHBS_SNV[2: nchar(sdHBS_SNV)]
     if(varType == "DUP" & 
-       location == "downstream") sdHBS_SNV <- substr(sdHBS_SNV,1,
-                                                     nchar(sdHBS_SNV)-1)
+       location == "downstream") sdHBS_SNV <- sdHBS_SNV[1:(nchar(sdHBS_SNV)-1)]
     
     sdHBS_SNV <- hbg$hbs[hbg$seq == sdHBS_SNV] 
     

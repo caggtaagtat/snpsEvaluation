@@ -49,7 +49,7 @@ quickContext <- function(chromosome, gen_cord, strand,
     
     ## Alter coordinates
     if(varType == "DUP") general_cords[varPoint] <- paste(general_cords[varPoint], collapse="")
-    if(varType == "DEL") general_cords[varPoint:(varPoint+deletion_length-1)] <- general_cords[varPoint-1]
+    if(varType == "DEL") general_cords[varPoint:(varPoint+deletion_length-1)] <- ""
     if(varType == "INS") general_cords[varPoint] <- paste(rep(general_cords[varPoint],
                                                               insertion_length), collapse="")
     
@@ -80,6 +80,8 @@ quickContext <- function(chromosome, gen_cord, strand,
         }
     } 
     
+    general_cords <- general_cords[general_cords != ""]
+
     ## Calcualte Delta HZEI
     surroundingSeqHZEI <- calculateHZEIint(surroundingSeq)
     altSurroundingSeqHZEI <- calculateHZEIint(altSurroundingSeq)

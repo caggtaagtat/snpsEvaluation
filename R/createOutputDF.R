@@ -21,11 +21,14 @@ createOutputDF <- function(rowsDF){
                           HBS_alt_overlapping_SDs=0,
                           HBS_diff_overlapping_SDs=0,
                           HBS_diff_overlapping_SDs_vs_annotated=0,
+                          SRE_support_alt_overlapping_SD=0,
                           MaxEnt_alt_overlapping_SAs=0,
                           MaxEnt_diff_overlapping_SAs=0,
                           MaxEnt_diff_overlapping_SA_vs_annotated=0,
+                          SRE_support_alt_overlapping_SA=0,
                           Maxent_alt_overlapping_SD_GC_sites=0,
                           Maxent_diff_overlapping_SD_GC_sites=0,
+                          SRE_support_alt_overlapping_GCsite=0,
                           SD_HBS_ref=0,
                           SD_HBS_alt=0,
                           SA_MaxEnt_ref=0,
@@ -47,6 +50,8 @@ createOutputDF <- function(rowsDF){
                           SA_sequence_surrounding="",
                           SA_sequence_surrounding_with_SNP="",
                           Potentially_interesting="",
+                          Next_SA_coordinate=0,
+                          Next_SD_coordinate=0,
                           ID=seq_len(rowsDF))
   
   return(snvTable)
