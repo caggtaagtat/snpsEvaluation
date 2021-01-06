@@ -32,7 +32,7 @@ assesSREsupportSD <- function(SDcor, varType, altNuc, gen_cord, chromosome,
   
   ## Get coordinate range
   donor_cords_up <- c((SDcor-upborder) : (SDcor+downborder))
-  if(strand == "-1") donor_cords_up <- rev(donor_cords_up)
+  if(strand == "-1") donor_cords_up <- rev(c((SDcor-downborder) : (SDcor+upborder)))
   
   ## HZEI int is the same
   SD_HZEI_up_alt <- SD_HZEI_up

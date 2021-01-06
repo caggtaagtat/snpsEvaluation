@@ -15,7 +15,7 @@ quickContext <- function(chromosome, gen_cord, strand,
     
     ## Sequence range
     general_cords_ref <- c((gen_cord-upborder) : (gen_cord+downborder))
-    if(strand == "-1") general_cords_ref <- rev(general_cords_ref)
+    if(strand == "-1") general_cords_ref <- rev(c((gen_cord-downborder) : (gen_cord+upborder)))
     
     ## In case of a deletion widen the sequence range 
     ## in both directions by half of the deletion length
@@ -38,7 +38,7 @@ quickContext <- function(chromosome, gen_cord, strand,
     
     ## Sequence range
     general_cords <- c((gen_cord-upborder) : (gen_cord+downborder))
-    if(strand == "-1") general_cords <- rev(general_cords)
+    if(strand == "-1") general_cords <- rev(c((gen_cord-downborder) : (gen_cord+upborder)))
     
     varPoint <- which(general_cords %in% gen_cord)
     

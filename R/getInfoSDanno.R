@@ -31,7 +31,7 @@ getInfoSDanno <- function(splicesites, varType, altNuc, gen_cord,
   
   ## Sequence range
   donor_cords <- c((SDcor-upborder) : (SDcor+downborder))
-  if(strand == "-1") donor_cords <- rev(donor_cords)
+  if(strand == "-1") donor_cords <- rev(c((SDcor-downborder) : (SDcor+upborder)))
   
   ## In case of deletion increase SD sequence by
   ## number of nt which overlapp with variation coordinates

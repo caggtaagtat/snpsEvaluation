@@ -30,7 +30,7 @@ getSAcontext <- function(SAcor, varType, altNuc, gen_cord, chromosome,
   
   ## Get coordinate range
   donor_cords_up <- c((SAcor-upborder) : (SAcor+downborder))
-  if(strand == "-1") donor_cords_up <- rev(donor_cords_up)
+  if(strand == "-1") donor_cords_up <- rev(c((SAcor-downborder) : (SAcor+upborder)))
   
   ## HZEI int is the same
   SA_surAlt <- SA_sur

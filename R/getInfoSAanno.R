@@ -19,6 +19,7 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
   ## Get Sequence of annotated Acceptor with and without the variation
   upborder <- 20
   downborder <- 2
+
   
   ## Get the surrounding reference sequence
   sequence_range <- getReferenceSequence(chromosome = chromosome, 
@@ -30,7 +31,7 @@ getInfoSAanno <- function(splicesites, varType, altNuc, gen_cord,
   
   ## Sequence range
   acceptor_cords <- c((SAcor-upborder) : (SAcor+downborder))
-  if(strand == "-1") acceptor_cords <- rev(acceptor_cords)
+  if(strand == "-1") acceptor_cords <- rev(c((SAcor-downborder) : (SAcor+upborder)))
   
   varCoos <- gen_cord
   

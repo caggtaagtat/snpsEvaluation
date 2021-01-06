@@ -30,7 +30,7 @@ markInterestingVariations <- function(SDdown, SDcor, SAdown, SAcor, sdHBS, saMES
                                              SAcor, "). ")
   
   ## Is strength of annotated Donor affected
-  SDdiff <- sdHBSalt - sdHBS
+  SDdiff <- sdHBSalt - sdHBS 
   if(SDdiff < -2) impactReport <- paste0(impactReport,
                                              "HBS of annotated SD reduced from ",sdHBS,
                                          " to ", sdHBSalt, " (",
