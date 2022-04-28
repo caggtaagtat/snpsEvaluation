@@ -1,0 +1,8 @@
+import(BSgenome)
+importFrom("GenomicRanges", "GRanges")
+#importFrom("seqinr", "read.fasta")
+import(ggplot2)
+import(Biostrings)
+
+#export functions
+exportPattern("^[[:alpha:]]+")
